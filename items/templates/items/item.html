@@ -1,0 +1,172 @@
+{% extends "main/base.html" %}{% load static %}
+{% block css %}
+<link href="{% static "lib/owlcarousel/assets/owl.carousel.min.css" %}" rel="stylesheet">
+{% endblock css %}
+
+{% block main %}
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="/">Home</a>
+                <a class="breadcrumb-item text-dark" href="{% url "items" %}">Shop</a>
+                <span class="breadcrumb-item active">Item Detail</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Shop Detail Start -->
+<div class="container-fluid pb-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-5 mb-30">
+            <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner bg-light">
+
+                    {% for img in item.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img class="w-100 h-100" style="height: 250px;" src="{{img.image.url}}" alt="Image">
+                        </div>
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
+                    <i class="fa fa-2x fa-angle-left text-dark"></i>
+                </a>
+                <a class="carousel-control-next" href="#product-carousel" data-slide="next">
+                    <i class="fa fa-2x fa-angle-right text-dark"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-7 h-auto mb-30">
+            <div class="h-100 bg-light p-30">
+                <h1>{{item.title}}</h1>
+                
+                {% if item.discount > 0 %}<del>Rs. {{item.sale_price}}</del> -{{item.discount}}% {% endif %}<h3 class="font-weight-semi-bold mb-4">Rs.{{item.get_discounted_price}}</h3>
+                    <p class="mb-4">{{item.overview}}</p>
+               
+                    <form action="{% url "add_to_cart" %}" method="post" class="d-flex align-items-center mb-4 pt-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{item.id}}">
+                        <div class="input-group quantity mr-3" style="width: 130px;">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn-minus">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="text" name="qty" value="{{item.min_shipping}}" max="{% if item.quantity < item.max_shipping %}{{item.quantity}}{% else %}{{item.max_shipping}}{% endif %}" min="{{item.min_shipping}}" class="form-control bg-secondary border-0 text-center">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn-plus">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% if item.in_cart %}
+                        <a href="{% url "cart" %}" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> View Cart</a>                        
+                        {% elif item.quantity < item.min_shipping %}
+                        <a href='' class="btn btn-danger px-3"><i class="fa fa-shopping-cart mr-1"></i> Sold Out</a> 
+                        {% else %}
+                        <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>                        
+                        {% endif %}
+                    </form>
+
+                    {% if item.in_wish %}
+                    <a href="{% url "wish" %}" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i>view wish</a>                        
+                    {% else %}
+                    <a href="{% url "add_to_wish" item.id %}"class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> add To wish</a>  
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Shop Detail End -->
+
+
+<!-- Products Start -->
+
+
+<div class="container-fluid py-5">
+    <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">You May Also Like</span></h2>
+    <div class="row px-xl-5">
+        <div class="col">
+            <div class="owl-carousel related-carousel">
+                {% for item in related_items %}
+                <div class="product-item bg-light">
+                    <div class="product-img position-relative overflow-hidden">
+                        {% if item.thumbnail %}
+                        <img class="img-fluid w-100" style="height: 350px;" src="{{item.thumbnail.url}}" alt="">
+                        {% endif %}
+                        <div class="product-action">
+                            <a class="btn btn-outline-dark btn-square" href="{% url "item" item.id %}"><i class="fa fa-shopping-cart"></i></a>
+                        </div>
+                    </div>
+                    <div class="ml-2 py-4">
+                        <a class="h6 text-decoration-none text-truncate" href="{% url "item" item.id %}"><h2>{{item.title}}</h2></a>
+                        <div class=" ml-2 mt-2">
+                            <h5>Rs.{{item.get_discounted_price}}</h5><h6 class="text-muted ">{% if item.discount > 0 %}<del>Rs. {{item.sale_price}}</del> -{{item.discount}}% {% endif %}</h6>
+                        </div>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Products End -->
+<script>
+    const sub_total_ele = document.querySelector('#sub_total_ele')
+    const sub_shiping_ele = document.querySelector('#sub_shiping_ele')
+    const total_price = document.querySelector('#total_price')
+    
+    document.querySelectorAll('.quantity button').forEach((button) => {
+        button.addEventListener('click', () => {
+            var input = button.parentElement.parentElement.querySelector('input')
+            var oldValue = parseInt(input.value)
+            var max = parseInt(input.max)
+            var min = parseInt(input.min)
+            var newVal = oldValue
+        
+            if (button.classList.contains('btn-plus')) {
+                if (oldValue === max) return
+                newVal = oldValue + 1
+            } else {
+                if (oldValue > min) newVal = oldValue - 1
+            }
+            input.value = newVal
+            updatePrice()
+        })
+    })
+    const updatePrice = () => {
+        const trs = document.querySelectorAll('tbody tr')
+        sub_total = 0
+        ship_total = 0
+        for (tr of trs){
+            const qty = tr.querySelector('input.cartqty').value
+            const tdtotal = tr.querySelector('td.total')        
+            const discounted = tr.getAttribute('data-discounted')
+            console.log(qty)
+            console.log(tdtotal)
+            console.log(discounted)
+
+            const shipping = tr.getAttribute('data-shipping')
+
+            const trTotal = Number(qty) * Number(discounted)
+            
+            const shipTotal = Number(qty) * Number(shipping)
+            
+            tdtotal.innerText = trTotal
+            sub_total += trTotal
+            ship_total += shipTotal
+        }
+        sub_total_ele.innerText = sub_total
+
+        sub_shiping_ele.innerText = ship_total
+        const totalPrice =  sub_total + ship_total
+        total_price.innerText = totalPrice
+
+    }
+</script>
+{% endblock main %}

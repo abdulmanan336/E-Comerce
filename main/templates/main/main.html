@@ -1,0 +1,195 @@
+{% extends "main/base.html" %}{% load static %}
+{% block css %}
+<link href="{% static "lib/owlcarousel/assets/owl.carousel.min.css" %}" rel="stylesheet">
+{% endblock css %}
+{% block main %}
+
+    <!-- Carousel Start -->
+    <div class="container-fluid mb-3">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        {% for main in main %}
+                        <li data-target="#header-carousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                        {% endfor %}
+                    </ol>
+                    <div class="carousel-inner">
+                        {% for main in main %}
+                        <div class="carousel-item position-relative {% if forloop.first %}active{% endif %}" style="height: 430px;">
+                            <img class="position-absolute w-100 " src="{{main.img.url}}" style="object-fit: fill;">
+                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                <div class="p-3" style="max-width: 700px;">
+                                    <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">{{main.title}}</h1>
+                                    <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{main.overview}}</p>
+                                    <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="{% url "items" %}?offer={{main.title}}">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                {% for offer in offers %}
+                <div class="product-offer mb-30" style="height: 200px;">
+                    <img class="img-fluid" src="{{offer.img.url}}" style="object-fit: fill;" alt="">
+                    <div class="offer-text">
+                        <h6 class="text-white text-uppercase"><del>{% if item.discount > 0 %} Save {{offer.offer}}%{% endif %}</h6> 
+                        <h3 class="text-white mb-3">{{offer.title}}</h3>
+                        <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{offer.overview}}</p>
+                        <a href="{% url "items" %}?offer={{offer.title}}" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Carousel End -->
+
+
+    <!-- Featured Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5 pb-3">
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">Quality Product</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
+                    <h5 class="font-weight-semi-bold m-0">Free Shipping</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                    <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">Return Policy Available</h5>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
+                    <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
+                    <h5 class="font-weight-semi-bold m-0">24/7 Support</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Featured End -->
+
+
+    <!-- Categories Start -->
+    <div class="container-fluid pt-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Categories</span></h2>
+        <div class="row px-xl-5 pb-3">
+            {% for category in category %}
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <a class="text-decoration-none" href="{% url "items" %}?category={{category.title}}">
+                    <div class="cat-item d-flex align-items-center mb-4">
+                        <div class="overflow-hidden" style="width: 100px; height: 100px;">
+                            {% if category.thumbnail %}
+                                <img class="img-fluid" style="height: 100px;" src={{category.thumbnail.url}} alt="">
+                            {% endif %}
+                        </div>
+                        <div class="flex-fill pl-3">
+                            <h6>{{category.title}}</h6>
+                            <small class="text-body">{{category.items_count}}</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Categories End -->
+
+     <!-- Featured Start -->
+     <div class="container-fluid pt-5 pb-3">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Featured Products</span></h2>
+        <div class="row px-xl-5">
+            {% for item in featured_items %}
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <div class="product-item bg-light mb-4">
+                    <div class="product-img position-relative overflow-hidden">
+                        {% if item.thumbnail %}
+                        <img class="img-fluid" style="height: 350px; width:400px" src="{{item.thumbnail.url}}" alt="">
+                        {% endif %}
+                        <div class="product-action">
+                            <a class="btn btn-outline-dark btn-square" href="{% url "item" item.id %}"><i class="fa fa-shopping-cart"></i></a>
+                        </div>
+                    </div>
+                    <div class="ml-2 py-4">
+                        <a class="h6 text-decoration-none text-truncate" href="{% url "item" item.id %}"><h2>{{item.title}}</h2></a>
+                        <div class="ml-2">
+                            <h5>  Rs. {{item.get_discounted_price}}</h5><p class="text-muted"><del>{% if item.discount > 0 %}Rs. {{item.sale_price}}</del> -{{item.discount}}% {% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Featured End -->
+
+    <!-- Products Start -->
+    <div class="container-fluid pt-5 pb-3">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Products</span></h2>
+        <div class="row px-xl-5">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                <div class="product-item bg-light mb-4">
+                    <div class="product-img position-relative overflow-hidden">
+                        {% if product.thumbnail %}
+                        <img class="img-fluid w-100" style="height: 350px;" src="{{product.thumbnail.url}}" alt="">
+                        {% endif %}
+                        <div class="product-action">
+                            <a class="btn btn-outline-dark btn-square" href="{% url "item" product.id %}"><i class="fa fa-shopping-cart"></i></a>
+                        </div>
+                    </div>
+                    <div class="ml-2 py-4">
+                        <a class="h6 text-decoration-none text-truncate" href="{% url "item" product.id %}"><h2>{{product.title}}</h2></a>
+                        <div class="ml-2">
+                            <h5>Rs. {{product.get_discounted_price}}</h5><h6 class="text-muted"><del>{% if item.discount > 0 %}Rs. {{item.sale_price}}</del> -{{item.discount}}% {% endif %}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Products End -->
+
+
+    <!-- Offer Start -->
+    <div class="container-fluid pt-5 pb-3">
+        <div class="row px-xl-5">
+            {% for offer in offers %}
+            <div class="col-md-6">
+                <div class="product-offer mb-30" style="height: 300px;">
+                    <img class="img-fluid" src="{{offer.img.url}}" style="object-fit: fill;" alt="">
+                    <div class="offer-text">
+                        <!-- <h6 class="text-white text-uppercase">Save {{offer.offer}}%</h6> -->
+                        <h3 class="text-white mb-3">{{offer.title}}</h3>
+                        <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{offer.overview}}</p>
+                        <a href="{% url "items" %}?offer={{offer.title}}" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% comment %} <div class="col-md-6">
+                <div class="product-offer mb-30" style="height: 300px;">
+                    <img class="img-fluid" src="img/offer-2.jpg" alt="">
+                    <div class="offer-text">
+                        <h6 class="text-white text-uppercase"></h6>
+                        <h3 class="text-white mb-3">Special Offer</h3>
+                        <a href="" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+        </div>
+    </div>
+    <!-- Offer End -->
+{% endblock main %}

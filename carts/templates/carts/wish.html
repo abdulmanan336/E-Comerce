@@ -1,0 +1,53 @@
+{% extends "main/base.html" %}{% load static %}
+
+{% block css %}
+<link href="{% static "lib/owlcarousel/assets/owl.carousel.min.css" %}" rel="stylesheet">
+{% endblock css %}
+
+{% block main %}
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="/">Home</a>
+                    <a class="breadcrumb-item text-dark" href="{% url "items" %}">Shop</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Cart Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            
+            <div class="col-lg-8 table-responsive mb-5 gap-5 d-flex flex-row">
+                {% for item in items %}
+                    <div style='position: relative;' class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                        
+                        <div class="product-item bg-light mb-4">
+                            <div class="product-img position-relative overflow-hidden">
+                                {% if item.thumbnail %}
+                                  <img class="img-fluid w-100" style="height: 350px;" src="{{item.thumbnail.url}}" alt="">
+                                {% endif %}
+                                <div class="product-action">
+                                    <a class="btn btn-outline-dark btn-square" href="{% url "item" item.id %}"><i class="fa fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-center py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="{% url "item" item.id %}"><h2>{{item.title}}</h2> </a>
+                                <div class="d-flex align-items-center justify-content-center mt-2">
+                                    <h5>Rs.{{item.get_discounted_price}}</h5><h6 class="text-muted ml-2"><del>Rs.{{item.sale_price}}</del></h6>
+                                </div>
+                                <a style="border-radius: 23px; width: 100px;" href="{% url "del_save_item" item.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- Cart End -->
+    
+{% endblock main %}

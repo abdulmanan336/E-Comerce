@@ -1,0 +1,165 @@
+{% extends "main/base.html" %}
+
+{% block main %}
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="/">Home</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <!-- Shop Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            <form action="{% url "items" %}" id="filterForm" class="col-lg-3 col-md-4">
+            
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    {% if request.GET.order == 'true' %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="order" value="true" class="custom-control-input" id="newer" onclick="this.form.submit()" {% if request.GET.order == 'true' %}checked{% endif %} >
+                        <label class="custom-control-label" for="newer">Newer</label>
+                    </div>
+                    {% elif request.GET.order == 'false' %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="order" value="false" class="custom-control-input" id="older" onclick="this.form.submit()" {% if request.GET.order == 'false' %}checked{% endif %}>
+                        <label class="custom-control-label" for="older">Older</label>
+                    </div>
+                    {% else %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="order" value="true" class="custom-control-input" id="newer" onclick="this.form.submit()" {% if request.GET.order == 'true' %}checked{% endif %} >
+                        <label class="custom-control-label" for="newer">Newer</label>
+                    </div>
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="order" value="false" class="custom-control-input" id="older" onclick="this.form.submit()" {% if request.GET.order == 'false' %}checked{% endif %}>
+                        <label class="custom-control-label" for="older">Older</label>
+                    </div>
+                    {% endif %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="free_shipping" value="true" class="custom-control-input" id="free_shipping" onclick="this.form.submit()" {% if request.GET.free_shipping == 'true' %}checked{% endif %}>
+                        <label class="custom-control-label" for="free_shipping">Free Shipping</label>
+                    </div>
+                    
+                    
+                </div>
+                
+                <!-- Categories Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by Category</span></h5>
+                <div class="bg-light p-4 mb-30">
+                   
+                    {% for title, count in cats.items %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="category" value="{{title}}" class="custom-control-input" id="{{title}}" onclick="this.form.submit()" {% if request.GET.category == title %}checked{% endif %} >
+                        <label class="custom-control-label" for="{{title}}">{{title}}</label>
+                        <span class="badge border font-weight-normal">{{count}}</span>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+                <!-- Categories End -->
+                <!-- Brands Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by Brands</span></h5>
+                <div class="bg-light p-4 mb-30">
+                   
+                    {% for title, count in brands.items %}
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" name="brands" value="{{title}}" class="custom-control-input" id="{{title}}" onclick="this.form.submit()" {% if title in req_brands %}checked{% endif %}>
+                        <label class="custom-control-label" for="{{title}}">{{title}}</label>
+                        <span class="badge border font-weight-normal">{{count}}</span>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+                <!-- Brands End -->
+                <!-- Price Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <input type="number" style="margin-bottom: 10px; border-radius: 23px; padding: 5px 10px;" name="min_price" placeholder="Min Price" > 
+                    <input type="number"  style="margin-bottom: 10px; border-radius: 23px; padding: 5px 10px;" name="max_price" placeholder="Max Price" > 
+                    <button class="hover" style="border-radius: 23px; background-color: yellow; color: gray; width: 200px;" type="submit">Apply</button>
+                </div>
+                <!-- Price End -->
+                
+            </form>
+            <!-- Shop Sidebar End -->
+
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-9 col-md-8">
+                
+                <div class="row pb-3">
+                    
+                    {% for item in items %}
+                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                        <div class="product-item bg-light mb-4">
+                            <div class="product-img position-relative overflow-hidden">
+                                {% if item.thumbnail %}
+                                    <img class="img-fluid w-100" style="height: 350px;" src="{{ item.thumbnail.url }}" alt="">
+                                {% endif %}
+                                <div class="product-action">
+                                    <a class="btn btn-outline-dark btn-square" href="{% url "item" item.id %}"><i class="fa fa-shopping-cart"></i></a>
+                                </div>
+                            </div>
+                            <div class="ml-2 py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="{% url "item" item.id %}"><h2>{{ item.title }}</h2></a>
+                                <div class="ml-2 mt-2">
+                                    <h5>Rs.{{ item.get_discounted_price }}</h5>
+                                    <h6 class="text-muted"><del>{% if item.discount > 0 %}Rs. {{item.sale_price}}</del> -{{item.discount}}% {% endif %}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% if messages %}
+                    <!-- Display error messages -->
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                                    
+
+                    <div class="col-12">
+                        <ul class="pagination justify-content-center">
+                            <!-- Previous Page link -->
+                            <li class="page-item {% if not items.has_previous %}disabled{% endif %}">
+                                {% if items.has_previous %}
+                                    <a class="page-link" href="?page={{ items.previous_page_number }}&{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}{% endif %}{% if not forloop.last %}&{% endif %}{% endfor %}">Previous</a>
+                                {% endif %}
+                            </li>
+                    
+                            <!-- Page links -->
+                            {% for page_num in pages %}
+                                <li class="page-item {% if page_num == items.number %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ page_num }}&{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}{% endif %}{% if not forloop.last %}&{% endif %}{% endfor %}">{{ page_num }}</a>
+                                    {% comment %} <input type="radio" name="page" value="{{ page_num }}" form="filterForm" id="{{ page_num }}" onclick="this.form.submit()" style="display:none"/>
+                                    <label for="{{ page_num }}" class="page-link">{{ page_num }}</label> {% endcomment %}
+                                </li>
+                            {% endfor %}
+                    
+                            <!-- Next Page link -->
+                            <li class="page-item {% if not items.has_next %}disabled{% endif %}">
+                                {% if items.has_next %}
+                                    <a class="page-link" href="?page={{ items.next_page_number }}&{% for key, value in request.GET.items %}{% if key != 'page' %}{{key}}={{value}}{% endif %}{% if not forloop.last %}&{% endif %}{% endfor %}">Next</a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>    
+                </div>
+            </div>
+            <!-- Shop Product End -->
+        </div>
+    </div>
+    <!-- Shop End -->
+
+    {% endblock main %}
